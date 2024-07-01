@@ -4,6 +4,24 @@
 #include "HueLamp.h"
 #include "MyHouse.h"    //This header file is just a struct with the bridge ip, api key, and ID of all the lights of my house. It's in .gitignore for safety
 
+int lamp;
+
+int ChooseLamp() {
+    std::cout << "What lamp do you wish to control?" << std::endl << "0 = Ceiling, 1 = Stand, 2 = Room, 3 = Living Room" << std::endl;
+    std::cin >> lamp;
+    return lamp;
+}
+
+void ControlLamp(HueLamp& lamp, bool onoff) {
+    if (onoff)
+        lamp.TurnOn();
+    else if (!onoff)
+        lamp.TurnOff();
+
+    //return;
+}
+
+
 int main() {
     MyHouse House;
 
@@ -14,33 +32,41 @@ int main() {
     HueLamp RoomLamp            (bridge, House.RoomLightID);
     HueLamp LivingRoomLamp      (bridge, House.LivingRoomLightID);
 
+    bridge.GetDevices();
 
-    bool onoff;
-    int lamp;
+    int onoff;
+    
+    lamp = ChooseLamp();
+    system("cls");
 
     while (1) {
-        std::cout << "What lamp do you wish to control?" << std::endl << "1 = Ceiling, 2 = Stand" << std::endl;
-        std::cin >> lamp;
-        std::cout << "Turn on (1) | Turn off (0)?" << std::endl;
+
+        std::cout << "Turn off (0) | Turn on (1) | Choose a new Lamp (2)" << std::endl;
         std::cin >> onoff;
+        system("cls");
+
+        if (onoff == 2)
+        {
+            ChooseLamp();
+            system("cls");
+        }
 
         switch (lamp) {
-            case 1:
-                if (onoff)
-                    officeCeilingLamp.TurnOn();
-                else if (!onoff)
-                    officeCeilingLamp.TurnOff();
-                break;
+        case 0:
+            ControlLamp(officeCeilingLamp, static_cast<bool>(onoff));
+            break;
 
-            case 2:
-                if (onoff)
-                    officeStandLamp.TurnOn();
-                else if (!onoff)
-                    officeStandLamp.TurnOff();
-                break;
-
-            default:
-                break;
+        case 1:
+            ControlLamp(officeStandLamp, static_cast<bool>(onoff));
+            break;
+        case 2:
+            ControlLamp(RoomLamp, static_cast<bool>(onoff));
+            break;
+        case 3:
+            ControlLamp(LivingRoomLamp, static_cast<bool>(onoff));
+            break;
+        default:
+            break;
         }
 
     }

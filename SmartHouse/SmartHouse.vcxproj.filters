@@ -32,6 +32,7 @@
     <Text Include="ZZ_Lamps.txt">
       <Filter>Source Files</Filter>
     </Text>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HueLamp.h">

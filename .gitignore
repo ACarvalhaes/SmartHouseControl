@@ -8,6 +8,7 @@
 *.sln.docstates
 MyHouse.h
 ZZ_Lamps.txt
+PhillipsDevicesOnNetwork.txt
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

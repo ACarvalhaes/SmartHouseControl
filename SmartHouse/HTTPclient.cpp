@@ -32,6 +32,8 @@ void HTTPclient::PUTrequest(std::string resource) {
 	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, HeadersList);
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, resource.c_str());
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, IgnoreWriteCallback);
+
 
 	CURLcode result = curl_easy_perform(curl);
 
@@ -43,4 +45,38 @@ void HTTPclient::PUTrequest(std::string resource) {
 		std::cout << error.what() << std::endl;
 	}
 
+}
+
+void HTTPclient::GETrequest(std::ofstream& responseFile) {
+	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
+	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, HeadersList);
+
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, FileWriteCallback);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseFile);
+
+	CURLcode result = curl_easy_perform(curl);
+
+	try {
+		if (result != CURLE_OK)
+			throw std::runtime_error("Error: this HTTP request was not sucessful");
+	}
+	catch (const std::runtime_error& error) {
+		std::cout << error.what() << std::endl;
+	}
+
+}
+
+size_t HTTPclient::IgnoreWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {
+	return nmemb;
+}
+
+size_t HTTPclient::FileWriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata) {
+	std::ofstream* outputFile = static_cast<std::ofstream*>(userdata);	//userdata is the variable passed by the caller, in this case it's a ofstream file
+	size_t totalSize = size * nmemb;
+	outputFile->write(static_cast<char*>(ptr), totalSize);
+	
+	/*for (size_t i = 0; i < nmemb; i++)
+		outputFile << ptr[i];*/
+
+	return totalSize;
 }
